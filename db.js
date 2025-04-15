@@ -3,11 +3,11 @@ import { open } from "sqlite";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Emulate __dirname
+// Emulate __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Open SQLite connection
+// Open database
 const dbPromise = open({
   filename: path.join(__dirname, "transactions.db"),
   driver: sqlite3.Database,
@@ -15,18 +15,21 @@ const dbPromise = open({
 
 const initDb = async () => {
   const db = await dbPromise;
+
   await db.exec(`
     CREATE TABLE IF NOT EXISTS transactions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      date TEXT,
-      description TEXT,
-      amount REAL,
+      date TEXT NOT NULL,
+      description TEXT NOT NULL,
+      amount REAL NOT NULL,
       category TEXT,
+      subcategory TEXT,
       excluded INTEGER DEFAULT 0,
       notes TEXT,
-      type TEXT DEFAULT 'expense'
+      type TEXT CHECK(type IN ('expense', 'income')) DEFAULT 'expense'
     );
   `);
+
   return db;
 };
 

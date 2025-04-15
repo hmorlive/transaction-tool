@@ -7,14 +7,14 @@ export default function CategorySummary({ transactions }) {
     .filter((tx) => tx.type === 'income' && !tx.excluded)
     .reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
 
-  const expenseByCategory = transactions
+    const expenseByCategory = transactions
     .filter((tx) => tx.type !== 'income' && !tx.excluded)
     .reduce((acc, tx) => {
-      const category = tx.category || 'Uncategorized';
+      const category = tx.subcategory?.trim() || tx.category?.trim() || 'Uncategorized';
       const amt = Number(tx.amount || 0);
       acc[category] = (acc[category] || 0) + amt;
       return acc;
-    }, {});
+    }, {});  
 
   const entries = Object.entries(expenseByCategory).sort((a, b) => b[1] - a[1]);
   const totalExpenses = entries.reduce((sum, [, val]) => sum + val, 0);

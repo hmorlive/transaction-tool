@@ -25,6 +25,7 @@ app.post('/transactions', async (req, res) => {
     description,
     amount,
     category = '',
+    subcategory = '',
     excluded = 0,
     notes = '',
     type = 'expense',
@@ -36,10 +37,10 @@ app.post('/transactions', async (req, res) => {
   }
 
   const result = await db.run(
-    `INSERT INTO transactions (date, description, amount, category, excluded, notes, type)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [date, description, amount, category, excluded, notes, type]
-  );
+    `INSERT INTO transactions (date, description, amount, category, subcategory, excluded, notes, type)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [date, description, amount, category, subcategory, excluded, notes, type]
+  );  
 
   res.status(201).json({
     id: result.lastID,
