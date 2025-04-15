@@ -1,7 +1,7 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Emulate __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 // Open SQLite connection
 const dbPromise = open({
-  filename: path.join(__dirname, 'transactions.db'),
+  filename: path.join(__dirname, "transactions.db"),
   driver: sqlite3.Database,
 });
 
@@ -22,7 +22,9 @@ const initDb = async () => {
       description TEXT,
       amount REAL,
       category TEXT,
-      excluded INTEGER DEFAULT 0
+      excluded INTEGER DEFAULT 0,
+      notes TEXT,
+      type TEXT DEFAULT 'expense'
     );
   `);
   return db;

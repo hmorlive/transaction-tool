@@ -20,22 +20,53 @@ app.get('/transactions', async (req, res) => {
 // POST new transaction
 app.post('/transactions', async (req, res) => {
   const db = await initDb();
-  const { date, description, amount, category = '', excluded = 0 } = req.body;
+  let {
+    date,
+    description,
+    amount,
+    category = '',
+    excluded = 0,
+    notes = '',
+    type = 'expense',
+  } = req.body;
+
+  // Ensure no category is saved for income
+  if (type === 'income') {
+    category = '';
+  }
 
   const result = await db.run(
-    `INSERT INTO transactions (date, description, amount, category, excluded)
-     VALUES (?, ?, ?, ?, ?)`,
-    [date, description, amount, category, excluded]
+    `INSERT INTO transactions (date, description, amount, category, excluded, notes, type)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [date, description, amount, category, excluded, notes, type]
   );
 
-  res.status(201).json({ id: result.lastID, ...req.body });
+  res.status(201).json({
+    id: result.lastID,
+    date,
+    description,
+    amount,
+    category,
+    excluded,
+    notes,
+    type,
+  });
 });
 
 // PATCH transaction
 app.patch('/transactions/:id', async (req, res) => {
   const db = await initDb();
   const { id } = req.params;
-  const updates = req.body;
+  const updates = { ...req.body };
+
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).json({ error: 'No updates provided' });
+  }
+
+  // Optional: sanitize if type is being updated to income
+  if (updates.type === 'income') {
+    updates.category = '';
+  }
 
   const fields = Object.keys(updates).map(k => `${k} = ?`).join(', ');
   const values = Object.values(updates);

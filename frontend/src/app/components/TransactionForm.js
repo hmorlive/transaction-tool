@@ -1,29 +1,59 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { addTransaction } from '../lib/api';
-import { FiCalendar, FiTag, FiDollarSign, FiList, FiPlus } from 'react-icons/fi';
+import { useState } from "react";
+import { addTransaction } from "../../../lib/api";
+import {
+  FiCalendar,
+  FiTag,
+  FiDollarSign,
+  FiList,
+  FiPlus,
+} from "react-icons/fi";
 
 export default function TransactionForm({ onAdd, categories }) {
   const [form, setForm] = useState({
-    date: '',
-    description: '',
-    amount: '',
-    category: categories[0] || '',
+    date: new Date().toISOString().slice(0, 10),
+    description: "",
+    amount: "",
+    category: categories[0] || "",
     excluded: false,
+    type: "expense", // ✅ now included
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
-  };
+    const newValue = type === 'checkbox' ? checked : value;
+  
+    if (name === 'type') {
+      setForm((prev) => ({
+        ...prev,
+        type: newValue,
+        category: newValue === 'income' ? '' : categories[0] || '',
+      }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: newValue }));
+    }
+  };  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const tx = await addTransaction(form);
+    const payload = {
+      ...form,
+      category: form.type === 'income' ? '' : form.category,
+    };
+    const tx = await addTransaction(payload);
     onAdd(tx);
-    setForm({ ...form, description: '', amount: '' });
-  };
+    setForm({
+      date: new Date().toISOString().slice(0, 10),
+      description: '',
+      amount: '',
+      type: form.type,
+      category: form.type === 'expense' ? categories[0] || '' : '',
+      excluded: false,
+      notes: '',
+    });
+    
+  };  
 
   return (
     <form
@@ -76,22 +106,37 @@ export default function TransactionForm({ onAdd, categories }) {
         />
       </div>
 
-      <div className="flex flex-col flex-1 min-w-[160px]">
-        <label className="flex items-center gap-1 text-gray-600 mb-1">
-          <FiList />
-          Category
-        </label>
+      <div className="flex flex-col w-[120px]">
+        <label className="text-xs font-medium text-gray-600 mb-1">Type</label>
         <select
-          name="category"
-          value={form.category}
+          name="type"
+          value={form.type}
           onChange={handleChange}
-          className="px-2 py-1 border border-gray-300 rounded-md"
+          className="px-2 py-1 border border-gray-300 rounded-md text-sm"
         >
-          {categories.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
         </select>
       </div>
+
+      {form.type === "expense" && (
+        <div className="flex flex-col flex-1 min-w-[160px]">
+          <label className="flex items-center gap-1 text-gray-600 mb-1">
+            <FiList />
+            Category
+          </label>
+          <select
+            name="category"
+            value={form.category}
+            onChange={handleChange}
+            className="px-2 py-1 border border-gray-300 rounded-md"
+          >
+            {categories.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="flex items-center mt-1 sm:mt-5">
         <label className="inline-flex items-center gap-2 text-gray-700">
