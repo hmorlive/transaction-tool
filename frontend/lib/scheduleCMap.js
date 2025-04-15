@@ -1,0 +1,18 @@
+export const scheduleCLineMap = {
+  Advertising: "Line 8",
+  "Car and Truck Expenses": "Line 9",
+  "Contract Labor": "Line 11",
+  Depreciation: "Line 13",
+  Insurance: "Line 15",
+  "Legal and Professional Services": "Line 17",
+  "Office Expenses": "Line 18",
+  "Rent or Lease": "Line 20",
+  "Repairs and Maintenance": "Line 21",
+  Supplies: "Line 22",
+  "Taxes and Licenses": "Line 23",
+  Travel: "Line 24a",
+  Meals: "Line 24b",
+  Utilities: "Line 25",
+  Wages: "Line 26",
+  Other: "Line 27a",
+};
