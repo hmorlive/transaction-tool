@@ -131,6 +131,9 @@ export default function TransactionForm({ onAdd, categories }) {
             onChange={handleChange}
             className="px-2 py-1 border border-gray-300 rounded-md"
           >
+            <option value="" className="text-gray-500 text-xs" disabled defaultValue={true}>
+              Select a category
+            </option>
             {categories.map((c) => (
               <option key={c}>{c}</option>
             ))}

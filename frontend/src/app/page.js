@@ -34,16 +34,22 @@ export default function Page() {
     const filtered = selectedYear === 'All'
       ? transactions
       : transactions.filter(tx => tx.date?.startsWith(selectedYear));
-    setCurrentPage(1); // Reset to first page on year change
     return filtered;
   }, [transactions, selectedYear]);
+
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(filteredTransactions.length / itemsPerPage));
+  }, [filteredTransactions]);
 
   const paginatedTransactions = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return filteredTransactions.slice(start, start + itemsPerPage);
   }, [filteredTransactions, currentPage]);
 
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+  // Reset to page 1 when year or data changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedYear, transactions]);
 
   const handleDownloadCSV = () => {
     const filtered = filteredTransactions.filter(tx => !tx.excluded);
@@ -91,28 +97,10 @@ export default function Page() {
           transactions={paginatedTransactions}
           onUpdate={loadData}
           categories={categories}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
         />
-
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center mt-4 text-sm">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => p - 1)}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-          >
-            ◀ Prev
-          </button>
-          <span>
-            Page {currentPage} of {totalPages || 1}
-          </span>
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => p + 1)}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-          >
-            Next ▶
-          </button>
-        </div>
       </div>
 
       <div className="bg-white shadow-sm rounded-lg p-4 border border-gray-100">

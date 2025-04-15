@@ -29,3 +29,6 @@ Thumbs.db
 
 # Electron build output (if used later)
 dist/
+
+# private folder
+/.private/
