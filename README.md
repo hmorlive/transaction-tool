@@ -27,7 +27,7 @@ Built with:
 ### 1. Clone the project
 
 ```bash
-git clone https://github.com/your-username/transaction-tracker.git
+git clone https://github.com/hmorlive/transaction-tracker.git
 cd transaction-tracker
 ```
 
